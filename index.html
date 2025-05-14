@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celestial Panda Love</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* Celestial Base Styles */
+        :root {
+            --cosmic-purple: #8a2be2;
+            --starry-blue: #1e1e6d;
+            --twilight-pink: #ff6b8b;
+            --moon-glow: #f8f4e6;
+            --hearts-pink: #ff6b8b;
+        }
+        
+        body {
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            color: var(--moon-glow);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 50px;
+            margin: 0;
+        }
+        
+        /* Celestial Background Elements */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .shooting-star {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.1),
+                        0 0 0 8px rgba(255,255,255,0.1),
+                        0 0 20px rgba(255,255,255,1);
+            animation: shooting 3s linear infinite;
+            opacity: 0;
+        }
+        
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,1), transparent);
+        }
+        
+        @keyframes shooting {
+            0% {
+                transform: rotate(215deg) translateX(0);
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(215deg) translateX(-1000px);
+                opacity: 0;
+            }
+        }
+        
+        /* Celestial Header */
+        .header-container {
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+        }
+        
+        .moon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background: var(--moon-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 40px 15px rgba(248, 244, 230, 0.4);
+            z-index: -1;
+        }
+        
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+        }
+        
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #ff6b8b, #8a2be2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+        
+        .header-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: var(--moon-glow);
+        }
+        
+        /* Celestial Slider - Updated for perfect image fit */
+        .celestial-slider {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slider-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3),
+                        inset 0 0 20px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(30, 30, 109, 0.2);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            /* Height will be set by JavaScript based on image aspect ratio */
+        }
+        
+        .slides {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slide-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            transition: transform 8s ease-out;
+            will-change: transform;
+        }
+        
+        .slide.active .slide-image {
+            transform: scale(1.05);
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                                      rgba(138, 43, 226, 0.2) 0%, 
+                                      rgba(30, 30, 109, 0.7) 100%);
+        }
+        
+        /* Navigation */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--moon-glow);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+            color: var(--twilight-pink);
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        /* Romantic Progress Bar */
+        .progress-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, 
+                var(--hearts-pink), 
+                var(--cosmic-purple));
+            position: relative;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background: var(--hearts-pink);
+            transform: rotate(45deg);
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 10px var(--hearts-pink);
+        }
+        
+        @keyframes pulse {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.2); }
+            100% { transform: rotate(45deg) scale(1); }
+        }
+        
+        /* Dots */
+        .dots-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .dot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--twilight-pink);
+            transform: scale(0);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .dot.active::after {
+            transform: scale(1);
+        }
+        
+        .dot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--twilight-pink);
+        }
+        
+        /* Panda Constellation */
+        .panda-constellation {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 150px;
+            z-index: 5;
+        }
+        
+        .constellation-star {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px 2px rgba(255,255,255,0.5);
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        .constellation-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+            transform-origin: left center;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 3rem;
+            }
+            
+            .slider-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2.5rem;
+            }
+            
+            .header-subtitle {
+                font-size: 1rem;
+            }
+            
+            .slider-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .moon {
+                width: 60px;
+                height: 60px;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .slider-container {
+                border-radius: 10px;
+            }
+            
+            .slider-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .dot {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .progress-container {
+                height: 4px;
+            }
+            
+            .progress-bar::before {
+                width: 12px;
+                height: 12px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Celestial Background -->
+    <div class="stars" id="stars"></div>
+    <div class="shooting-star"></div>
+    
+    <!-- Header -->
+    <div class="header-container">
+        <div class="moon"></div>
+        <h1 class="header-title animate__animated animate__fadeInDown">Celestial Panda Love</h1>
+        <p class="header-subtitle animate__animated animate__fadeInUp">A cosmic romance written in the stars</p>
+    </div>
+    
+    <!-- Slider -->
+    <div class="celestial-slider">
+        <div class="slider-container" id="sliderContainer">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="slides">
+                <!-- Slide 1 -->
+                <div class="slide active">
+                    <div class="image-container">
+                        <img src="image/1.jpg" alt="Panda under stars" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/2.jpg" alt="Panda with moon" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/3.jpg"  class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/4.jpg" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 5 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/5.jpg"  class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+               <!-- Slide 5 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/6.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 7 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/7.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 8 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/8.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 9 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/9.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 10 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/10.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 11 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/11.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 12 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/12.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 13 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/13.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 14 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/14.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 15 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/15.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 16 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/16.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 17 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/17.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 18 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/18.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 19 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/19.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 20 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/20.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 21 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/21.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 22 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/22.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 23 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/23.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 24 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/24.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 25 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/25.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 26 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/26.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 27 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/27.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 28 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/28.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 29 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/29.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 30 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/30.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 31 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/31.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                <!-- Slide 32 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/32.jpg" alt="Panda in bamboo" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+                
+                <!-- Slide 33 -->
+                <div class="slide">
+                    <div class="image-container">
+                        <img src="image/33.jpg" alt="Panda couple" class="slide-image">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+            </div>
+           
+            <button class="slider-btn prev-btn animate__animated animate__fadeInLeft">❮</button>
+            <button class="slider-btn next-btn animate__animated animate__fadeInRight">❯</button>
+            
+            <div class="dots-container"></div>
+        </div>
+    </div>
+    
+    <!-- Panda Constellation -->
+    <div class="panda-constellation" id="constellation"></div>
+    
+    <script>
+        // Create stars background
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const count = 200;
+            
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.background = 'white';
+                star.style.borderRadius = '50%';
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random();
+                star.style.animation = `twinkle ${2 + Math.random() * 3}s infinite alternate`;
+                stars.appendChild(star);
+            }
+        }
+        
+        // Create panda constellation
+        function createConstellation() {
+            const container = document.getElementById('constellation');
+            
+            // Star positions (simplified panda shape)
+            const stars = [
+                {x: 50, y: 30},  // head top
+                {x: 30, y: 50},  // left ear
+                {x: 70, y: 50},  // right ear
+                {x: 50, y: 60},  // nose
+                {x: 40, y: 70},  // left eye
+                {x: 60, y: 70},  // right eye
+                {x: 50, y: 90},  // body top
+                {x: 30, y: 120}, // left paw
+                {x: 70, y: 120}, // right paw
+                {x: 50, y: 150}   // body bottom
+            ];
+            
+            // Create stars
+            stars.forEach(star => {
+                const element = document.createElement('div');
+                element.className = 'constellation-star';
+                element.style.left = `${star.x}%`;
+                element.style.top = `${star.y}px`;
+                element.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(element);
+            });
+            
+            // Create connecting lines
+            const connections = [
+                [0, 1], [0, 2], [0, 3],  // head
+                [3, 4], [3, 5],           // face
+                [3, 6],                    // neck
+                [6, 7], [6, 8], [6, 9]     // body
+            ];
+            
+            connections.forEach(conn => {
+                const start = stars[conn[0]];
+                const end = stars[conn[1]];
+                
+                const length = Math.sqrt(
+                    Math.pow(end.x - start.x, 2) + 
+                    Math.pow(end.y - start.y, 2)
+                ) * 0.01 * container.offsetWidth;
+                
+                const angle = Math.atan2(
+                    end.y - start.y, 
+                    end.x - start.x
+                ) * 180 / Math.PI;
+                
+                const line = document.createElement('div');
+                line.className = 'constellation-line';
+                line.style.left = `${start.x}%`;
+                line.style.top = `${start.y}px`;
+                line.style.width = `${length}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                container.appendChild(line);
+            });
+        }
+        
+        // Shooting star animation
+        function animateShootingStar() {
+            const star = document.querySelector('.shooting-star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            star.style.opacity = '0';
+            
+            setTimeout(() => {
+                star.style.opacity = '1';
+            }, 100);
+            
+            setTimeout(animateShootingStar, 8000);
+        }
+        
+        // Set slider size to match current image
+        function setSliderSize() {
+            const sliderContainer = document.getElementById('sliderContainer');
+            const activeSlide = document.querySelector('.slide.active');
+            const activeImage = activeSlide.querySelector('.slide-image');
+            
+            if (activeImage.complete) {
+                updateSliderSize(activeImage);
+            } else {
+                activeImage.addEventListener('load', function() {
+                    updateSliderSize(activeImage);
+                });
+            }
+        }
+        
+        function updateSliderSize(image) {
+            const sliderContainer = document.getElementById('sliderContainer');
+            const imageWidth = image.naturalWidth;
+            const imageHeight = image.naturalHeight;
+            
+            // Calculate maximum dimensions that fit within viewport
+            const maxWidth = window.innerWidth * 0.9;
+            const maxHeight = window.innerHeight * 0.7;
+            
+            // Calculate aspect ratio
+            const aspectRatio = imageWidth / imageHeight;
+            
+            // Determine which dimension to constrain by
+            let width, height;
+            if (imageWidth > maxWidth || imageHeight > maxHeight) {
+                if ((maxWidth / maxHeight) > aspectRatio) {
+                    // Constrain by height
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                } else {
+                    // Constrain by width
+                    width = maxWidth;
+                    height = width / aspectRatio;
+                }
+            } else {
+                // Use original image dimensions if they fit
+                width = imageWidth;
+                height = imageHeight;
+            }
+            
+            // Apply dimensions to slider
+            sliderContainer.style.width = `${width}px`;
+            sliderContainer.style.height = `${height}px`;
+            
+            // Center the slider
+            sliderContainer.style.margin = '0 auto';
+        }
+        
+        // Handle window resize
+        function handleResize() {
+            setSliderSize();
+        }
+        
+        // Initialize slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createConstellation();
+            animateShootingStar();
+            
+            const slides = document.querySelectorAll('.slide');
+            const dotsContainer = document.querySelector('.dots-container');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const progressBar = document.getElementById('progressBar');
+            let currentIndex = 0;
+            let slideInterval;
+            const slideCount = slides.length;
+            
+            // Create dots
+            slides.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                if (index === currentIndex) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            });
+            
+            // Update progress bar
+            function updateProgressBar() {
+                const progress = ((currentIndex + 1) / slideCount) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Navigation functions
+            function goToSlide(index) {
+                slides[currentIndex].classList.remove('active');
+                dotsContainer.children[currentIndex].classList.remove('active');
+                
+                currentIndex = (index + slides.length) % slides.length;
+                
+                slides[currentIndex].classList.add('active');
+                dotsContainer.children[currentIndex].classList.add('active');
+                
+                document.querySelector('.slides').style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                // Trigger the scale animation on the new active slide
+                const activeImage = slides[currentIndex].querySelector('.slide-image');
+                activeImage.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    activeImage.style.transform = 'scale(1.05)';
+                }, 50);
+                
+                // Update slider size for the new image
+                setSliderSize();
+                
+                // Update progress bar
+                updateProgressBar();
+                
+                // Reset auto-advance timer
+                resetSlideInterval();
+            }
+            
+            function nextSlide() {
+                goToSlide(currentIndex + 1);
+            }
+            
+            function prevSlide() {
+                goToSlide(currentIndex - 1);
+            }
+            
+            function resetSlideInterval() {
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+            
+            // Event listeners
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+            });
+            
+            // Auto-advance slides
+            resetSlideInterval();
+            
+            // Pause on hover
+            document.querySelector('.slider-container').addEventListener('mouseenter', () => {
+                clearInterval(slideInterval);
+            });
+            
+            document.querySelector('.slider-container').addEventListener('mouseleave', () => {
+                resetSlideInterval();
+            });
+            
+            // Initialize the first slide image scale
+            const firstImage = document.querySelector('.slide.active .slide-image');
+            firstImage.style.transform = 'scale(1.05)';
+            
+            // Set initial slider size
+            setSliderSize();
+            
+            // Initialize progress bar
+            updateProgressBar();
+            
+            // Add resize listener
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>
